@@ -1,0 +1,37 @@
+https://github.com/yiisoft/yii2-app-advanced/blob/master/docs/guide/start-installation.md
+Для тех кто сдает ДЗ на гитхабе, единственный способ показать свои изменения в локальный конфигах -
+делать их в конфигах папки environments, поэтому в этом ДЗ и последующих вносим изменения
+в локальные конфиги в environments в том числе.
+
+1. Развернуть приложение на базе Advanced Template
+в окружении Development, перед инициализацией (init) настроить:
+
+Включить дебаг панель и gii в main-local.php папки environments\dev
+для бэка и фронта (добавив 'allowedIPs' => ['*'] в массив после 'class' => )
+Создать новую БД (например yii2-adv) и настроить доступ к ней
+в конфиге environments/dev/common/config/main-local.php
+Раскомментировать urlManager в main.php фронта и бэка
+Кто установит через вагрант, придется еще раз запустить init после настройки
+2. В миграцию в console/migrations добавить поля
+access_token varchar(255) и avatar varchar(255),
+выполнить миграцию и зарегистрировать пользователя на странице Signup.
+3. Создать страницу «Hello, world» в фротэнде приложении (создаем контроллер-экшен).
+4. Создать страницу «Hello, world» в бэкэнде приложении (создаем контроллер-экшен).
+5. Создать страницу «Hello, world» в консольном приложении (создаем контроллер-экшен).
+6. Применить к бэкэнд приложению тему Admin LTE
+(https://github.com/dmstr/yii2-adminlte-asset) и настроить ее. Устанавливаем версию 2.6.2
+
+if (YII_ENV_DEV) {
+
+    $config['bootstrap'][] = 'debug';
+    $config['modules']['debug'] = [
+        'class' => 'yii\debug\Module',
+        'allowedIPs' => ['62.162.250.208'],
+    ];
+
+    $config['bootstrap'][] = 'gii';
+    $config['modules']['gii'] = [
+        'class' => 'yii\gii\Module',
+        'allowedIPs' => ['62.162.250.208']
+    ];
+}
