@@ -26,7 +26,7 @@ class SiteController extends Controller
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['logout', 'index'],
+                        'actions' => ['hello', 'logout', 'index'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -61,6 +61,16 @@ class SiteController extends Controller
     public function actionIndex()
     {
         return $this->render('index');
+    }
+
+    /**
+     * Displays homepage.
+     *
+     * @return mixed
+     */
+    public function actionHello()
+    {
+        return $this->render('hello');
     }
 
     /**
