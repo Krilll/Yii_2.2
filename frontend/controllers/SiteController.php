@@ -77,16 +77,6 @@ class SiteController extends Controller
         return $this->render('index');
     }
 
-    /**
-     * Displays homepage.
-     *
-     * @return mixed
-     */
-    public function actionHello()
-    {
-        return $this->render('hello');
-    }
-
 
     /**
      * Logs in a user.

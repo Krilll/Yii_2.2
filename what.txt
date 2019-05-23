@@ -2,20 +2,103 @@ https://github.com/yiisoft/yii2-app-advanced/blob/master/docs/guide/start-instal
 Для тех кто сдает ДЗ на гитхабе, единственный способ показать свои изменения в локальный конфигах -
 делать их в конфигах папки environments, поэтому в этом ДЗ и последующих вносим изменения
 в локальные конфиги в environments в том числе.
++ в обычных, ибо почему-то не работает...
 
-+ 1. Развернуть приложение на базе Advanced Template
-в окружении Development, перед инициализацией (init) настроить:
-+ Включить дебаг панель и gii в main-local.php папки environments\dev
-+ для бэка и фронта (добавив 'allowedIPs' => ['*'] в массив после 'class' => )
-+ Создать новую БД (например yii2-adv) и настроить доступ к ней
-в конфиге environments/dev/common/config/main-local.php
-+ Раскомментировать urlManager в main.php фронта и бэка
-Кто установит через вагрант, придется еще раз запустить init после настройки
-+ 2. В миграцию в console/migrations добавить поля
-access_token varchar(255) и avatar varchar(255),
-выполнить миграцию и зарегистрировать пользователя на странице Signup.
 + 3. Создать страницу «Hello, world» в фротэнде приложении (создаем контроллер-экшен).
-+ 4. Создать страницу «Hello, world» в бэкэнде приложении (создаем контроллер-экшен).
-5. Создать страницу «Hello, world» в консольном приложении (создаем контроллер-экшен).
 6. Применить к бэкэнд приложению тему Admin LTE
 (https://github.com/dmstr/yii2-adminlte-asset) и настроить ее. Устанавливаем версию 2.6.2
+
+
+1. Тестирование
+
+*При работе в виндосе (кроме консоли опенсервера)
+используйте команды codecept.bat и yii_test.bat.
++ 1) Подготовка - создать и указать в тестовом конфиге БД
+для тестирования, запустить yii_test migrate.
++ 2) Запустить тестирование находясь в корне проекта -
+должны запуститься тесты в фронтэнде, бэкэнде и коммоне.
++ 3) Создайте класс юнит тестов во фронтэнде,
+реализовав в нем проверки с помощью перечисленных методов,
+ тест должен проходить успешно.
+ Используйте хотя бы для одной проверки BDD стиль описания expect()->.
+- $this->assertTrue - сравнении с true
+- $this->assertEquals - равно ожидаемому значению
+- $this->assertLessThan - меньше ожидаемого значения
+- $this->assertAttributeEquals - значение атрибута (свойства)
+объекта равно ожидаемому значению -
+создайте экземпляр ContactForm,
+заполните аттрибуты и проверьте,
+можно так тестировать, например массовую загрузку значений атрибутов.
+- $this->assertArrayHasKey - в массиве есть указанный ключ
++ 4) В фронтэнде создать класс функциональных тестов,
+реализовать в нем проверку с помощью датапровайдера
+содержимое активного (выделенного) пункта меню на всех страницах фронтэнда.
+Тест должен проходить успешно
+https://codeception.com/docs/07-AdvancedUsage#DataProvider-Annotations
++ 5) Исправить тест LoginCest в бэкэнде.
+
+2. Создать и выполнить 3 миграции
+Для task можно скопировать из предыдущего проекта и доработать.
+1. В каждой миграции необходимо создавать
+удаленные ключи по описанным связям между таблицами ,
+например, чтобы создать ключ связывающий
+поле field1 таблицы table1 и поле field2 таблицы table2 пишем в миграции
+$this->addForeignKey('fx_table1_table2',
+'table1', ['field1'], 'table2', ['field2'])
+Если несколько связей между таблицами можно
+добавить к названию ключа цифру, например fx_table1_table2_2
+2. Не забываем реализовать в миграции откат,
+проверьте как накатываются-откатываются миграции
+3. Последовательность создания миграции -
+как перечислены таблицы, иначе м.б. проблемы с ключами.
+- yii migrate create create_new_table_task
+таблица task, поля:
+
+    =id - integer, primaryKey
+    =title - varchar(255), not null
+    =description - text, not null
+    =project_id - integer, null, новое поле
+    executor_id - integer, null, новое поле
+    started_at - integer, null, новое поле
+    completed_at - integer, null, новое поле
+    creator_id - integer, not null
+    updater_id - integer, null
+    created_at - integer, not null
+    updated_at - integer, null
+    поля executor_id, creator_id и updater_id
+    связаны с полем id таблицы user -
+    три отдельные метода addForeignKey
+
+таблица project, поля:
+
+    =id - integer, primaryKey
+    =title - varchar(255), not null
+    =description - text, not null
+    =active - boolean, not null, DEFAULT '0'
+    =creator_id - integer, not null
+    =updater_id - integer, null
+    =created_at - integer, not null
+    =updated_at - integer, null
+    поля creator_id и updater_id
+    связаны с полем id таблицы user
+
+таблица project_user, поля:
+
+    =id - integer, primaryKey
+    =project_id - integer, not null
+    =user_id - integer, not null
+    role - enum ('manager', 'developer', 'tester'),
+    спец. метода в миграциях для типа enum нет,
+    описывается просто SQL кодом
+    поля user_id связано с полем
+    id таблицы user,
+    project_id с полем id таблицы project
+
+3. В GII создать 3 модели по таблицам task,
++project, project_user,
+неймспейс common/models,
+отмечая ActiveQuery в common/models/query
+
+Включить дебаг панель и gii в main-local.php
+папки environments\dev для бэка и фронта
+(добавив 'allowedIPs' => ['*'] в массив после 'class' => )
