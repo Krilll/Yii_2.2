@@ -25,6 +25,7 @@ class ProjectUser extends \yii\db\ActiveRecord
         return 'project_user';
     }
 
+
     /**
      * {@inheritdoc}
      */

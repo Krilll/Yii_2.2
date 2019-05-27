@@ -26,7 +26,7 @@ class SiteController extends Controller
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['hello', 'logout', 'index'],
+                        'actions' => ['hello', 'logout', 'index', 'forum'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -61,6 +61,16 @@ class SiteController extends Controller
     public function actionIndex()
     {
         return $this->render('index');
+    }
+
+    /**
+     * Displays chat-page.
+     *
+     * @return string
+     */
+    public function actionForum()
+    {
+        return $this->render('forum');
     }
 
     /**

@@ -1,0 +1,85 @@
+.content-header, .site-index {
+    text-align: center;
+}
+
+.forum-main {
+    width: 600px;
+    border: 2px solid gray;
+    padding: 5px;
+    margin: 10px auto 10px;
+}
+
+#newMessage {
+    margin-top: 10px;
+    border: 2px solid grey;
+}
+
+#newMessage:hover {
+    background-color: grey;
+    color: white;
+}
+
+#oldMessage {
+    padding: 5px;
+    background-color: #ecf0f5;
+    border: 2px solid grey;
+    text-align: left;
+}
+
+.forumMessage {
+    padding: 5px;
+    margin: 5px;
+    border: 2px solid black;
+    border-radius: 5px;
+}
+
+#oldMessage DIV:nth-of-type(odd) {
+    border-color: papayawhip;
+    background-color: whitesmoke;
+    text-align: right;
+}
+
+#oldMessage DIV:nth-of-type(even) {
+    border-color: whitesmoke;
+    background-color: papayawhip;
+    text-align: left;
+}
+
+
+#myForm {
+    padding: 20px;
+    color: black;
+    border-radius: 3%;
+    border: 2px solid black;
+    width: 380px;
+    margin: 10px auto 10px;
+}
+
+#addMessage {
+    width: 130px;
+    margin-top: 5px;
+    border-radius: 5%;
+    color: black;
+    background-color: #ecf0f5;
+    border: 1px solid black;
+    padding: 5px;
+}
+#addMessage:hover {
+    color: #ecf0f5;
+    background-color: black;
+}
+
+input, textarea {
+    padding: 5px;
+}
+textarea {
+    resize: none;
+}
+
+.hidden {
+    display: none;
+}
+
+
+
+
