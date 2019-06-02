@@ -1,31 +1,15 @@
 <?php
 
-namespace common\models;
+namespace frontend\modules\api\models;
 
 use Yii;
-
-use yii\behaviors\TimestampBehavior;
-use yii\behaviors\BlameableBehavior;
 
 
 /**
  * This is the model class for table "project".
- *
- * @property int $id
- * @property string $title
- * @property string $description
- * @property int $active
- * @property int $creator_id
- * @property int $updater_id
- * @property int $created_at
- * @property int $updated_at
- *
- * @property User $creator
- * @property User $updater
- * @property ProjectUser[] $projectUsers
- * @property Task $getProjectTasks
+
  */
-class Project extends \yii\db\ActiveRecord
+class Project extends common\models\Project
 {
     /**
      * {@inheritdoc}
@@ -123,5 +107,20 @@ class Project extends \yii\db\ActiveRecord
     public function getProjectTasks()
     {
         return static::hasMany(Task::className(), ['project_id' => 'id']);
+    }
+
+
+    public function fields()
+    {
+        return [
+            'id',
+            'title',
+            'description_short' =>  [['description'], 'max' => 50],
+        ];
+    }
+
+    public function extraFields()
+    {
+        return ['tasks'];
     }
 }

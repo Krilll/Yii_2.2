@@ -1,31 +1,65 @@
-﻿https://github.com/yiisoft/yii2-app-advanced/blob/master/docs/guide/start-installation.md
+﻿---https://github.com/yiisoft/yii2-app-advanced/blob/master/docs/guide/start-installation.md
 Для тех кто сдает ДЗ на гитхабе, единственный способ показать свои изменения в локальный конфигах -
 делать их в конфигах папки environments, поэтому в этом ДЗ и последующих вносим изменения
 в локальные конфиги в environments в том числе.
-+ в обычных, ибо почему-то не работает...
++ в обычных, ибо почему-то не работает.---
 
-+ 1. Установить Ratchet, реализовать в common модуль Chat
-//'defaultPort' => 8080 => ?
-http://socketo.me/docs/install
-http://socketo.me/docs/hello-world
-+ Модуль должен содержать консольный контроллер для запуска сервера,
-=компонент чата,
-+виджет с вьюхой
-+и файлом ассетс бандла.
-+В виджете порт для соединения должен настраиваться.
-+В ассетсе подключается файл js и css.
-+Добавить виджет чата на страницу в бэкенде,
-+в результате при отправке сообщения через консоль в чат,
-оно должно появляться на всех страницах где выведен виджет чата.
-
-####Дополнительно
-=Сделать в виджете интерфейс для отправки сообщения
-
-+ + С помощью Gii сгенерировать код CRUD для Task и Project
+пред = С помощью Gii сгенерировать код CRUD для Task и Project
 для неймспейса backend\controllers
 и frontend\controllers\ включив Pjax
 и указав Search Model Class (например common\models\search\TaskSearch)
 
-Подключить в Task и Project моделях поведения
++ Подключить в Task и Project моделях поведения
 для заполнения атрибутов creator_id updater_id created_at updated_at
+
+1. По проекту
+
+1) Создать в User модели методы релейшенов
+и добавить соответствующие записи в пхпдок
+класса (вида @property Class $relation) и
+константы. Релейшены - getActivedTasks
+(задачи связанные по executor_id),
+getCreatedTasks
+(задачи связанные по creator_id),
+getUpdatedTasks (задачи связанные по updater_id),
+getCreatedProjects (проекты связанные по creator_id),
+getUpdatedProjects (проекты связанные по updater_id).
+2) Создать метод релейшенов - в Project модели
+с Task по полю project_id (один ко многим),
+в Task с Project по project_id (многие к одному) .
+Добавить имена релейшенов в пхпдок класса
+и создать соответствующие константы.
++ 3) Добавить (любым способом) в таблицы проект
+и несколько задач входящих в него -
+для тестирования RESTful API.
+
+
+2. RESTful API
+https://www.yiiframework.com/doc/guide/2.0/ru/rest-quick-start
+а) Создать во фронте модуль api, добавить в конфиг фронта
+и настроить компоненты для работы REST API в
+конфиге (урлы, парсер).
+б) Создать в модуле модели Task и Project
+(неймспейс frontend\modules\api\models)
+отнаследованные от соответствующих моделей из
+common\models и создать в них методы fields и extrafields:
+- Task fields - id, title, description_short
+(обрезанный до 50 символов description);
+extrafields - project
+- Project fields - id, title, description_short
+(обрезанный до 50 символов description),
+active; extrafields - tasks.
+в) В модуле создать ProjectController
+отнаследованный от yii\rest\ActiveController
+и настроенный на работу c моделью Project
+созданной в п.б.
+Проверить получение списка проектов,
+информацию о проекте (в том числе со связанными задачами),
+создание-изменение-удаление проекта.
+г) В модуле создать TaskController отнаследованный
+от yii\rest\Controller, и реализующий действия
+просмотра списка задач и просмотр одной задачи
+( использовать модельTask созданную в п.б).
+Проверить получение списка задач и информацию о задаче,
+в том числе со связанным проектом.
 

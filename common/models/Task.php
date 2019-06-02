@@ -4,6 +4,9 @@ namespace common\models;
 
 use Yii;
 
+use yii\behaviors\TimestampBehavior;
+use yii\behaviors\BlameableBehavior;
+
 /**
  * This is the model class for table "task".
  *
@@ -22,6 +25,8 @@ use Yii;
  * @property User $creator
  * @property User $executor
  * @property User $updater
+ *
+ * @property Project $getTaskProject
  */
 class Task extends \yii\db\ActiveRecord
 {
@@ -33,19 +38,38 @@ class Task extends \yii\db\ActiveRecord
         return 'task';
     }
 
+
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => BlameableBehavior::className(),
+                'createdByAttribute' => 'creator_id',
+                'updatedByAttribute' => 'updater_id',
+            ],
+            [
+                'class' => TimestampBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+            ],
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['title', 'description', 'creator_id', 'created_at'], 'required'],
+            [['title', 'description'], 'required'],
             [['description'], 'string'],
-            [['project_id', 'executor_id', 'started_id', 'completed_id', 'creator_id', 'updater_id', 'created_at', 'updated_at'], 'integer'],
+            [['creator_id', 'updater_id', 'created_at', 'updated_at'], 'integer'],
             [['title'], 'string', 'max' => 255],
             [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['creator_id' => 'id']],
-            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['executor_id' => 'id']],
             [['updater_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updater_id' => 'id']],
+            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['executor_id' => 'id']],
         ];
     }
 
@@ -100,5 +124,12 @@ class Task extends \yii\db\ActiveRecord
     public static function find()
     {
         return new \common\models\query\TaskQuery(get_called_class());
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTaskProject()
+    {
+        return static::hasOne(Project::className(), ['project_id' => 'id']);
     }
 }

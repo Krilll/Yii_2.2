@@ -7,6 +7,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
+use yii\behaviors\BlameableBehavior;
 /**
  * User model
  *
@@ -20,14 +21,20 @@ use yii\web\IdentityInterface;
  * @property integer $status
  * @property integer $created_at
  * @property integer $updated_at
+ * @property integer $creator_id
+ * @property integer $updater_id
  * @property string $password write-only password
+ * @property Task $getActiveTasks
+ * @property Task $getUpdatedTasks
+ * @property Project $getCreatedProjects
+ * @property Project $getUpdatedProjects
+ *
  */
 class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
-
 
     /**
      * {@inheritdoc}
@@ -43,18 +50,49 @@ class User extends ActiveRecord implements IdentityInterface
     public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+            [
+                'class' => BlameableBehavior::className(),
+                'createdByAttribute' => 'creator_id',
+                'updatedByAttribute' => 'updater_id',
+            ],
+            [
+                'class' => TimestampBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+            ],
+        ];
+    }
+
+    public function rules()
+    {
+        return [
+            [['username'], 'required', 'on' => 'create'],
+            [['username'], 'required', 'on' => 'update'],
+            [['created_at', 'updated_at'], 'integer'],
+            [['username', 'auth_key'], 'string', 'max' => 255],
         ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function attributeLabels()
     {
         return [
-            ['status', 'default', 'value' => self::STATUS_INACTIVE],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
+            'id' => 'ID',
+            'username' => 'Username',
+            'password_hash' => 'Password Hash',
+            'auth_key' => 'Auth Key',
+            'access_token' => 'Access Token',
+            'avatar' => 'Avatar',
+            'status' => 'Status',
+            //'creator_id' => 'Creator ID',
+            //'updater_id' => 'Updater ID',
+            'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
+            'verification_token' => 'Verufication Token',
         ];
     }
 
@@ -170,8 +208,8 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * Generates password hash from password and sets it to the model
-     *
      * @param string $password
+     * @throws
      */
     public function setPassword($password)
     {
@@ -205,5 +243,34 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getActiveTasks()
+    {
+        return static::hasMany(Task::className(), ['executor_id' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUpdatedTasks()
+    {
+        return static::hasMany(Task::className(), ['updater_id' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCreatedProjects()
+    {
+        return static::hasMany(Project::className(), ['creator_id' => 'id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUpdatedProjects()
+    {
+        return static::hasMany(Project::className(), ['updater_id' => 'id']);
     }
 }
