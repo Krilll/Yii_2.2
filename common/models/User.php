@@ -84,13 +84,13 @@ class User extends ActiveRecord implements IdentityInterface
             [
                 'class' => \mohorev\file\UploadImageBehavior::class,
                 'attribute' => 'avatar',
-                'scenarios' => [self::SCENARIO_UPDATE],
+                'scenarios' => [self::SCENARIO_UPDATE, self::SCENARIO_CREATE],
                 //'placeholder' => '@app/modules/user/assets/images/userpic.jpg',
                 'path' => '@frontend/web/upload/user/{id}',
                 'url' => Yii::$app->params['host.front'] .
                     Yii::getAlias('@web/upload/user/{id}'),
                 'thumbs' => [
-                    self::AVATAR_SMALL => ['width' => 30, 'width' => 30],
+                    self::AVATAR_SMALL => ['width' => 30, 'height' => 30],
                     self::AVATAR_PREVIEW => ['width' => 200, 'height' => 200],
                 ],
             ],
@@ -100,14 +100,17 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['username','email'], 'required'],
+            [['username','email', 'password'], 'required'],
             [['username','email','password'], 'safe'],
-            ['status','in','range' => self::STATUSES],
+
+            [['status'], 'default', 'value' => self::STATUS_ACTIVE],
+            [['status'],'in','range' => self::STATUSES],
+
             [['avatar'], 'default', 'value' => 'avatar'],
-            [['avatar'], 'image', 'extensions' => 'jpg, png, jpeg', 'on' => self::SCENARIO_UPDATE],
+            [['avatar'], 'image', 'extensions' => 'jpg, png, jpeg', 'on' => [self::SCENARIO_UPDATE, self::SCENARIO_CREATE]],
+
             [['email'], 'email'],
-            [['username'], 'required', 'on' => 'create'],
-            [['username'], 'required', 'on' => 'update'],
+            //[['username'], 'required', 'on' => 'create'],
             [['created_at', 'updated_at'], 'integer'],
             [['username', 'auth_key', 'password'], 'string', 'max' => 255],
         ];
@@ -121,6 +124,7 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             'id' => 'ID',
             'username' => 'Username',
+            'password' => 'Password',
             'password_hash' => 'Password Hash',
             'auth_key' => 'Auth Key',
             'access_token' => 'Access Token',

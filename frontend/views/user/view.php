@@ -6,12 +6,14 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model common\models\User */
 
-$this->title = $model->username;
+$this->title = $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="user-view">
+
+    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -29,24 +31,18 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'username',
-            //'auth_key',
-            //'password_hash',
-            //'password_reset_token',
-            'email',
-            //'access_token',
-            ['label' => 'avatar',
-                'value' => (
-                    $model->getThumbUploadUrl('avatar', \common\models\User::AVATAR_PREVIEW)
-                    ),
-                'format' => ['image',['width'=>'100','height'=>'100']],
-                ],
-            //($model->getThumbUploadUrl('avatar', \common\models\User::AVATAR_PREVIEW))],
+            'auth_key',
+            'password_hash',
+            'password_reset_token',
+            'email:email',
+            'access_token',
+            'avatar',
             'status',
             'created_at',
             'updated_at',
-            //'verification_token',
-            //'creator_id',
-            //'updater_id',
+            'verification_token',
+            'creator_id',
+            'updater_id',
         ],
     ]) ?>
 
