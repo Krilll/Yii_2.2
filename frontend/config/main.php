@@ -16,6 +16,7 @@ return [
             'csrfParam' => '_csrf-frontend',
         ],*/
         'request' => [
+            'csrfParam' => '_csrf-frontend',
             'parsers' => [
                 'application/json' => 'yii\web\JsonParser',
             ]
@@ -41,20 +42,20 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*'urlManager' => [
+        'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
-        ],*/
-        'urlManager' => [
+        ],
+        /*'urlManager' => [
             'enablePrettyUrl' => true,
             'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'api\project'],
             ],
-        ]
+        ]*/
     ],
     'params' => $params,
 ];

@@ -32,9 +32,27 @@ use yii\behaviors\BlameableBehavior;
  */
 class User extends ActiveRecord implements IdentityInterface
 {
+    private $password;
+
+    const SCENARIO_CREATE = 'create';
+    const SCENARIO_UPDATE = 'update';
+
+    const AVATAR_SMALL = 'small';
+    const AVATAR_PREVIEW = 'preview';
+
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
+
+    const STATUSES = [
+        self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED
+    ];
+
+    const STATUSES_NAMES = [
+        self::STATUS_ACTIVE => 'Active',
+        self::STATUS_INACTIVE => 'Inactive',
+        self::STATUS_DELETED => 'Delete'
+    ];
 
     /**
      * {@inheritdoc}
@@ -62,16 +80,36 @@ class User extends ActiveRecord implements IdentityInterface
                     ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
                 ],
             ],
+
+            [
+                'class' => \mohorev\file\UploadImageBehavior::class,
+                'attribute' => 'avatar',
+                'scenarios' => [self::SCENARIO_UPDATE],
+                //'placeholder' => '@app/modules/user/assets/images/userpic.jpg',
+                'path' => '@frontend/web/upload/user/{id}',
+                'url' => Yii::$app->params['host.front'] .
+                    Yii::getAlias('@web/upload/user/{id}'),
+                'thumbs' => [
+                    self::AVATAR_SMALL => ['width' => 30, 'width' => 30],
+                    self::AVATAR_PREVIEW => ['width' => 200, 'height' => 200],
+                ],
+            ],
         ];
     }
 
     public function rules()
     {
         return [
+            [['username','email'], 'required'],
+            [['username','email','password'], 'safe'],
+            ['status','in','range' => self::STATUSES],
+            [['avatar'], 'default', 'value' => 'avatar'],
+            [['avatar'], 'image', 'extensions' => 'jpg, png, jpeg', 'on' => self::SCENARIO_UPDATE],
+            [['email'], 'email'],
             [['username'], 'required', 'on' => 'create'],
             [['username'], 'required', 'on' => 'update'],
             [['created_at', 'updated_at'], 'integer'],
-            [['username', 'auth_key'], 'string', 'max' => 255],
+            [['username', 'auth_key', 'password'], 'string', 'max' => 255],
         ];
     }
 
@@ -88,8 +126,8 @@ class User extends ActiveRecord implements IdentityInterface
             'access_token' => 'Access Token',
             'avatar' => 'Avatar',
             'status' => 'Status',
-            //'creator_id' => 'Creator ID',
-            //'updater_id' => 'Updater ID',
+            'creator_id' => 'Creator ID',
+            'updater_id' => 'Updater ID',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
             'verification_token' => 'Verufication Token',
@@ -182,6 +220,14 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getAuthKey()
     {
         return $this->auth_key;
@@ -213,7 +259,10 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function setPassword($password)
     {
-        $this->password_hash = Yii::$app->security->generatePasswordHash($password);
+        $this->password = $password;
+        if($password) {
+            $this->password_hash = Yii::$app->security->generatePasswordHash($password);
+        }
     }
 
     /**
@@ -272,5 +321,24 @@ class User extends ActiveRecord implements IdentityInterface
     public function getUpdatedProjects()
     {
         return static::hasMany(Project::className(), ['updater_id' => 'id']);
+    }
+
+    /**
+     * @param bool $insert whether this method called while inserting a record.
+     * If `false`, it means the method is called while updating a record.
+     * @return bool whether the insertion or updating should continue.
+     * If `false`, the insertion or updating will be cancelled.
+    **/
+    public function beforeSave($insert)
+    {
+
+        if(!parent::beforeSave($insert)) {
+            return false;
+        }
+
+        if($insert) {
+            $this->generateAuthKey();
+        }
+        return true;
     }
 }
