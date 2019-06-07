@@ -5,6 +5,8 @@ namespace common\models\search;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use common\models\Project;
+use common\models\User;
+
 
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;

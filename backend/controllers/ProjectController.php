@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use Yii;
 use common\models\Project;
+
 use common\models\search\ProjectSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -100,7 +101,7 @@ class ProjectController extends Controller
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
+     * @throws
      */
     public function actionDelete($id)
     {

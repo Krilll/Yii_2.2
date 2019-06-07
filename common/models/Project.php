@@ -6,6 +6,9 @@ use Yii;
 
 use yii\behaviors\TimestampBehavior;
 use yii\behaviors\BlameableBehavior;
+use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
+
+use yii\db\ActiveRecord;
 
 
 /**
@@ -27,6 +30,21 @@ use yii\behaviors\BlameableBehavior;
  */
 class Project extends \yii\db\ActiveRecord
 {
+    const RELATION_PROJECT_USERS = 'projectUsers';
+
+    const STATUS_ACTIVE = 1;
+    const STATUS_NOTACTIVE = 0;
+
+
+    const STATUSES = [
+        self::STATUS_ACTIVE, self::STATUS_NOTACTIVE,
+    ];
+
+    const STATUSES_NAMES = [
+        self::STATUS_ACTIVE => 'Active',
+        self::STATUS_NOTACTIVE => 'No active',
+    ];
+
     /**
      * {@inheritdoc}
      */
@@ -38,6 +56,14 @@ class Project extends \yii\db\ActiveRecord
     public function behaviors()
     {
         return [
+            TimestampBehavior::class,
+            BlameableBehavior::class,
+            'saveRelations' => [
+                'class'     => SaveRelationsBehavior::class,
+                'relations' => [
+                   self::RELATION_PROJECT_USERS,
+                ],
+            ],
             [
                 'class' => BlameableBehavior::className(),
                 'createdByAttribute' => 'creator_id',
@@ -65,7 +91,10 @@ class Project extends \yii\db\ActiveRecord
             [['title'], 'string', 'max' => 255],
             [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['creator_id' => 'id']],
             [['updater_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updater_id' => 'id']],
-        ];
+
+            [['active'],'in','range' => self::STATUSES],
+
+            ];
     }
 
     /**
