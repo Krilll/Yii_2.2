@@ -92,7 +92,7 @@ https://github.com/unclead/yii2-multiple-input
 
 + а) Добавить в Project константы для значений active.
 б) Добавить в Project поведение SaveRelationsBehavior с настройкой 'relations' => ['projectUsers'].
-в) Добавить в ProjectUser константы для ролей, в том числе ROLE_LABELS - имена ролей
++ в) Добавить в ProjectUser константы для ролей, в том числе ROLE_LABELS - имена ролей
 
 3. Раздел Project в бэке
 

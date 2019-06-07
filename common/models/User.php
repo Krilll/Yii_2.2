@@ -346,7 +346,7 @@ class User extends ActiveRecord implements IdentityInterface
         return true;
     }
 
-    static function sortById_users() {
+    public static function sortById_users() {
         return static::find()->select('username')->indexBy('id')->column();
     }
 }

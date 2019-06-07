@@ -56,8 +56,8 @@ class Project extends \yii\db\ActiveRecord
     public function behaviors()
     {
         return [
-            TimestampBehavior::class,
-            BlameableBehavior::class,
+            //TimestampBehavior::class,
+           // BlameableBehavior::class,
             'saveRelations' => [
                 'class'     => SaveRelationsBehavior::class,
                 'relations' => [
@@ -135,7 +135,7 @@ class Project extends \yii\db\ActiveRecord
      */
     public function getProjectUsers()
     {
-        return $this->hasMany(ProjectUser::className(), ['project_id' => 'id']);
+        return $this->hasMany(ProjectUser::class, ['project_id' => 'id']);
     }
 
     /**
