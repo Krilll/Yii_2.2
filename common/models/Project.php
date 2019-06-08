@@ -45,6 +45,9 @@ class Project extends \yii\db\ActiveRecord
         self::STATUS_NOTACTIVE => 'No active',
     ];
 
+    const PROJECT_UPDATE = 'update';
+    const PROJECT_CREATE = 'create';
+
     /**
      * {@inheritdoc}
      */
@@ -93,9 +96,21 @@ class Project extends \yii\db\ActiveRecord
             [['updater_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updater_id' => 'id']],
 
             [['active'],'in','range' => self::STATUSES],
-
             ];
     }
+
+    /**
+     * Сценарии
+     * @return array
+     */
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+        $scenarios[self::PROJECT_UPDATE] = ['title', 'description', 'active'];
+        $scenarios[self::PROJECT_CREATE] = ['title', 'description', 'active'];
+        return $scenarios;
+    }
+
 
     /**
      * {@inheritdoc}

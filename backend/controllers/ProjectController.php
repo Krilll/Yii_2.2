@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use Yii;
 use common\models\Project;
+use yii\data\ActiveDataProvider;
 
 use common\models\search\ProjectSearch;
 use yii\web\Controller;
@@ -53,8 +54,15 @@ class ProjectController extends Controller
      */
     public function actionView($id)
     {
+        $model = new Project();
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $model->getProjectUsers(),
+            ]);
+
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -66,6 +74,7 @@ class ProjectController extends Controller
     public function actionCreate()
     {
         $model = new Project();
+        $model->setScenario(Project::PROJECT_CREATE);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -86,6 +95,7 @@ class ProjectController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $model->setScenario(Project::PROJECT_UPDATE);
 
         if ($this->loadModel($model) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);

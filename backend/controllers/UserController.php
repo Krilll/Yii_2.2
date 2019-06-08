@@ -11,10 +11,10 @@ use yii\filters\VerbFilter;
 
 /**
  * UserController implements the CRUD actions for User model.
+ *
  */
 class UserController extends Controller
 {
-
     /**
      * {@inheritdoc}
      */
@@ -126,5 +126,15 @@ class UserController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function sortByIdUsers() {
+
+        return User::find()
+            ->select('username')
+            ->from('user')
+            ->indexBy('id')
+            ->orderBy('id')
+            ->column();
     }
 }

@@ -12,7 +12,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="project-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Create Project', ['create'], ['class' => 'btn btn-success']) ?>
@@ -27,12 +26,12 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
+            //'id',
             'title',
             'description:ntext',
             ['attribute' => 'active',
                 'filter' => \common\models\Project::STATUSES_NAMES],
-            'creator_id',
+            //'creator_id',
             //'updater_id',
             //'created_at',
             //'updated_at',
